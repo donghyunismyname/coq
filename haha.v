@@ -1,3 +1,28 @@
+Print nat_rect.
+
+Print sigT.
+
+Print sigT_rect.
+
+Print projT1.
+
+Variable A:Type.
+Variable B:A->Type.
+
+Definition ind := sigT_rect.
+
+Definition pr1 : forall p:{a:A & B a}, A :=
+  let C : {a:A & B a} -> Type := fun (_:{a:A & B a}) => A in
+  let g : forall a:A, forall b:(B a), C (existT
+
+
+
+
+
+
+
+
+
 Inductive li (A:Type) :Type :=
 | nil: li A
 | cons: A -> li A -> li A.
