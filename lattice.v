@@ -57,8 +57,44 @@ Proof.
       apply (H4 x y z). exact H2. exact H3.
 Qed.
 
-      
-     
-    
+
+Theorem bbb {X:Set} :
+  forall R:X->X->Prop, partial_order_irrefl R -> partial_order (add_loop R).
+Proof.
+  unfold partial_order.
+  unfold partial_order_irrefl.
+  intros.
+  split.
+  unfold reflexive. unfold add_loop.
+  intros. left. reflexivity.
+  split.
+  unfold transitive. unfold add_loop. intros.
+    inversion H0.
+    inversion H1.
+    left. rewrite H2. rewrite H3. reflexivity.
+    right. rewrite H2. exact H3.
+    inversion H1.
+      right. rewrite <- H3. exact H2.
+      right. inversion H. unfold transitive in H5. apply (H5 x y z).
+      exact H2. exact H3.
+  unfold antisymmetric. unfold add_loop.
+  intros.
+  inversion H0.
+  exact H2.
+  inversion H1.
+  rewrite H3. reflexivity.
+  unfold irreflexive in H.
+  inversion H.
+  enough False. inversion H6.
+  apply (H4 x).
+  unfold transitive in H5.
+  apply (H5 x y x).
+  exact H2. exact H3.
+Qed.
 
 
+Theorem ccc {X:Set} :
+  forall R:X->X->Prop, reflexive R -> add_loop (erase_loop R) = R.
+Proof.
+  unfold add_loop. unfold reflexive. unfold erase_loop.
+  intros. reflexivity.
