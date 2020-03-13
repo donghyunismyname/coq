@@ -1,0 +1,143 @@
+Section Predicate_calculus.
+
+
+
+
+
+Print and_ind.
+
+
+Definition haha:
+forall A B:Prop, A -> A \/ B.
+intros.
+left.
+assumption.
+
+Defined.
+Print haha.
+
+
+Definition deMorgan: 
+forall A B:Prop, ~A /\ ~B -> ~(A \/ B) :=
+fun A B:Prop =>
+fun p:~A /\ ~B =>
+fun aorb: A\/B =>
+or_ind 
+(and_ind (fun (a:~A)(b:~B) => a) p) 
+(and_ind (fun (a:~A)(b:~B) => b) p) 
+aorb.
+
+Print deMorgan.
+
+Definition demorg:
+forall A B:Prop, ~A /\ ~B -> ~(A \/ B) :=
+fun A B:Prop =>
+and_ind
+( fun na:~A => 
+  fun nb:~B => 
+  fun aorb:A\/B => 
+  (or_ind na nb aorb) 
+).
+
+Definition ddd:
+forall A B:Prop, ~(A \/ B) -> ~A /\ ~B :=
+fun A B:Prop =>
+fun g: (A \/ B) -> False => (conj
+  (fun a:A => g (or_introl a))
+  (fun b:B => g (or_intror b))
+).
+
+
+
+
+
+Variable D:Set.
+Variable R:D->D->Prop.
+
+Section R_sym_trans.
+Hypothesis R_symmetric :
+  forall x y : D, R x y -> R y x.
+Hypothesis R_transitive :
+  forall x y z : D, R x y -> R y z -> R x z.
+Lemma refl_if :
+  forall x : D, (exists y, R x y) -> R x x.
+intros x x_Rlinked.
+elim x_Rlinked.
+intros y Rxy.
+apply R_transitive with y.
+exact Rxy.
+apply R_symmetric.
+exact Rxy.
+Qed.
+End R_sym_trans.
+
+
+Variable P :  D -> Prop.
+Variable d : D.
+Lemma weird : (forall x:D, P x) ->  exists a, P a.
+intro UnivP.
+exists d.
+trivial.
+Qed.
+
+Hypothesis EM : forall A : Prop, A \/ ~ A.
+
+Lemma DN : forall A: Prop, ~~A -> A.
+intro.
+intro nnA.
+elim EM with A.
+tauto.
+intro nA.
+elim nnA.
+exact nA.
+Qed.
+
+Lemma drinker :  exists x : D, P x -> forall x : D, P x.
+elim (EM (exists x:D, ~ P x)).
+
+intros (Tom, Tom_does_not_drink).
+exists Tom.
+intro Tom_drinks.
+contradiction.
+
+intro No_nondrinker.
+exists d.
+intro d_drinks.
+intro x.
+elim (EM (P x)).
+tauto.
+intro Dick_does_not_drink.
+absurd (exists x:D, ~ P x).
+assumption.
+exists x.
+assumption.
+(*
+intro.
+exists d.
+intro.
+intro x.
+apply (DN (P x)).
+intro.
+apply H.
+exists x.
+assumption.
+*)
+Qed.
+
+End Predicate_calculus.
+
+Section one44.
+Variables P Q : nat -> Prop.
+Variables R : nat -> nat -> Prop.
+Lemma PQR :
+  forall x y:nat, (R x x -> P x -> Q x) -> P x -> R x y -> Q x.
+intros.
+generalize H0.
+enough (R x x) by auto.
+Abort.
+
+
+Check refl_if.
+Check weird.
+Check drinker.
+
