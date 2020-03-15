@@ -1,4 +1,12 @@
-Print nat_rect.
+Variable A B C:Type.
+Variable P: A->B->Type.
+
+
+
+
+
+
+
 
 Print sigT.
 
@@ -9,13 +17,58 @@ Print projT1.
 Variable A:Type.
 Variable B:A->Type.
 
-Definition ind := sigT_rect.
 
-Definition pr1 : forall p:{a:A & B a}, A :=
-  let C : {a:A & B a} -> Type := fun (_:{a:A & B a}) => A in
-  let g : forall a:A, forall b:(B a), C (existT
+Definition C1 : {a:A & B a}  -> Type := 
+  fun (_:{a:A & B a}) => A.
+Definition g1 : forall a:A, forall b:(B a), C1 (existT B a b) :=
+  fun (a:A)(b:(B a)) => a.
+Definition pr1 : {a:A & B a} -> A :=
+  sigT_rect C1 g1.
 
 
+Definition C2 : {a:A & B a} -> Type := 
+  fun (p:{a:A & B a}) => B (pr1 p).
+Definition g2 : forall a:A, forall b:(B a), C2 (existT B a b) :=
+  fun (a:A)(b:(B a)) => b.
+Definition pr2 : forall p:{a:A & B a}, B (pr1 p) :=
+  sigT_rect C2 g2.
+
+
+Variable a:A.
+Variable b:B a.
+Variable C:{a:A & B a} -> Type.
+Variable g: forall a:A, forall b:(B a), C (existT B a b).
+Variable p:{a:A & B a}.
+Compute (pr1 (existT B a b)).
+Compute (pr2 (existT B a b)).
+Compute (pr1 p).
+Compute (sigT_rect C g (existT B a b)).
+Compute (sigT_rect C g p).
+
+
+Compute projT1 p.
+Theorem aaa: @projT1 A B = pr1.
+Proof.
+  reflexivity.
+Qed.
+
+Print aaa.
+
+Theorem bbb: @projT2 A B = pr2.
+reflexivity.
+Qed.
+
+Theorem xxx: forall f:Type->Type, f = (fun a => f a).
+intros.
+reflexivity.
+Qed.
+
+
+Theorem ccc: p = (existT B (pr1 p) (pr2 p)).
+
+reflexivity.
+
+unfold pr1, pr2.
 
 
 
