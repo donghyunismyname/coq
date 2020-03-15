@@ -1,7 +1,28 @@
 Variable A B C:Type.
 Variable P: A->B->Type.
 
+Print existT.
+Print projT2.
 
+Definition aaa:
+  {a:A & forall b:B, P a b} -> forall b:B, {a:A & P a b} :=
+fun u b => existT 
+  (fun a => P a b)
+  (projT1 u)
+  (projT2 u b).
+
+
+
+
+Variable A:Type.
+Variable B:A->Type.
+Variable C:{a:A & B a} -> Type.
+
+Definition aaa : 
+  (forall x:A, forall y:(B x), C (existT B x y))
+  -> forall f:(forall x:A, B x), forall x:A, C (existT B x (f x)) 
+:=
+  fun p f x => p x (f x).
 
 
 
