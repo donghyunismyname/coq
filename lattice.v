@@ -14,16 +14,6 @@ Definition antisymmetric {X:Set} (R:X->X->Prop) : Prop :=
   forall x y:X, R x y -> R y x -> x=y.
 
 
-Definition partial_order {X:Set} (R:X->X->Prop) : Prop :=
-  reflexive R /\ transitive R /\ antisymmetric R.
-
-Definition partial_order_irrefl {X:Set} (R:X->X->Prop) :=
-  irreflexive R /\ transitive R.
-
-
-Definition erase_loop {X:Set} (R:X->X->Prop) : X->X->Prop :=
-  fun (a b:X) => ~a=b /\ R a b.
-
 Definition add_loop {X:Set} (R:X->X->Prop) : X->X->Prop :=
   fun (a b:X) => a=b \/ R a b.
 
