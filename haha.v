@@ -1,3 +1,20 @@
+Variable A:Type.
+Variable B:A->Type.
+Variable C:{x:A & B x} -> Type.
+
+Definition ac:
+  (forall x:A, {b:B x & C (existT B x b)}) ->
+  {g:(forall x:A, B x) & forall x:A, C (existT B x (g x))}
+  :=
+    fun f => existT
+               (fun g:(forall x:A, B x) => forall x:A, C (existT B x (g x)))
+               (fun x:A => projT1 (f x))
+               (fun x:A => projT2 (f x)).
+    
+  
+
+
+
 Variable A B C:Type.
 Variable P: A->B->Type.
 
