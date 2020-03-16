@@ -1,3 +1,31 @@
+Definition add : nat->nat->nat :=
+  fun a => nat_rec (fun _=>nat) a (fun (_:nat)(x:nat) => S x).
+
+Definition aaa: forall n:nat, add 0 n = add n 0.
+  induction n.
+  - reflexivity.
+  - simpl. rewrite IHn.
+    simpl. reflexivity.
+Qed.
+
+Print aaa.
+Compute (aaa 0).
+
+Definition pr1:nat->nat->nat.
+  intro. intro. exact H.
+Qed.
+
+Definition prr:nat->nat->nat := fun a b => a.
+
+
+Theorem bbb : (aaa 0) = eq_refl.
+  unfold aaa.
+  reflexivity.
+
+
+
+
+    
 Variable A:Type.
 Variable B:A->Type.
 Variable C:{x:A & B x} -> Type.
