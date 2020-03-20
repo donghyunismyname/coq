@@ -1,5 +1,36 @@
+Print eq_ind.
+
+Definition inv : forall (A:Type)(a b:A), a=b -> b=a :=
+  fun A a b e => eq_ind a
+                        (fun x => x=a)
+                        eq_refl
+                        b
+                        e.
+
+Definition compo : forall (A:Type)(a b c:A), a=b -> b=c -> a=c :=
+  fun A a b c eab ebc => eq_ind b
+                                (fun x => a=x)
+                                eab
+                                c
+                                ebc.
+
 Variable A:Type.
-Check (Type->Type).
+Variable x y z w:A.
+Variable p:x=y.
+Variable q:y=z.
+Variable r:z=w.
+
+Definition com : forall {a b c:A}, a=b -> b=c -> a=c :=
+  compo A.
+Notation "x * y" := (com x y).
+                                                   
+
+Definition fufu: p*(q*p) = (p*q)*p  := eq_refl.
+
+
+
+
+
 
 Definition add : nat->nat->nat :=
   fun a => nat_rec (fun _=>nat) a (fun (_:nat)(x:nat) => S x).
