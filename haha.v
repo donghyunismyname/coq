@@ -1,3 +1,14 @@
+Goal 10=10.
+reflexivity.
+Qed.
+Goal 1=1.
+reflexivity.
+Qed.
+Goal 1=1.
+reflexivity.
+Qed.
+
+
 Print eq_ind.
 
 Definition inv : forall (A:Type)(a b:A), a=b -> b=a :=
