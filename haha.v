@@ -1,3 +1,35 @@
+Print and.
+Print and_ind.
+Definition fff: forall A B:Prop, (A -> B) /\ A -> B :=
+  fun A B:Prop => and_ind (fun (x:A->B)(y:A) => x y).
+
+Print fff.
+
+
+                                                    
+Print le.
+Print le_ind.
+
+Goal forall a:nat, a <= 0 -> a = 0.
+  
+  
+  
+
+Goal forall a b:nat, a<=b -> exists k, a+k=b.
+  intro a. induction b.
+  - in
+
+Goal forall a b:nat, a <= b <-> exists d, a+d=b.
+  induction a. induction b.
+  split.
+  + intro. exists 0. reflexivity.
+  + intro. apply le_n.
+  + split.
+    intro.
+      
+
+
+
 Goal 10=10.
 reflexivity.
 Qed.
