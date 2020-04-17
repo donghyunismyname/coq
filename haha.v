@@ -1,14 +1,15 @@
-Print and.
-Print and_ind.
-Definition fff: forall A B:Prop, (A -> B) /\ A -> B :=
-  fun A B:Prop => and_ind (fun (x:A->B)(y:A) => x y).
-
-Print fff.
-
 
 
 Print le.
 Print le_ind.
+Print False_ind.
+
+Definition donghyun: not (1 <= 0) :=
+  fun pf:(1<=0) => le_ind 1 (fun x => x <= 0)
+                          pf
+                          (fun m => 
+
+
 
 Goal forall a:nat, a <= 0 -> a = 0.
   
