@@ -6,7 +6,7 @@ Definition fff: forall A B:Prop, (A -> B) /\ A -> B :=
 Print fff.
 
 
-                                                    
+
 Print le.
 Print le_ind.
 
