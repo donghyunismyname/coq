@@ -1,14 +1,31 @@
+Print eq_ind.
+Print nat_rect.
+Print nat_rec.
+
+Definition ntp:nat->Prop :=
+  nat_rect (fun _:nat => Prop)
+           True
+           (fun (_:nat)(_:Type) => False).
+
+Definition zero_neq_one : 0 <> 1 :=
+  fun pf:0=1 => eq_ind 0 ntp I 1 pf.
+
+Definition zero_neq_successor: forall n:nat, 0 <> S n .
+  induction n.
+  exact zero_neq_one.
+  
+  
+
 
 
 Print le.
 Print le_ind.
-Print False_ind.
 
-Definition donghyun: not (1 <= 0) :=
-  fun pf:(1<=0) => le_ind 1 (fun x => x <= 0)
-                          pf
-                          (fun m => 
+Definition donghyun: not (1 <= 0).
+  intro. inversion H.
+Qed.
 
+Print donghyun.
 
 
 Goal forall a:nat, a <= 0 -> a = 0.
