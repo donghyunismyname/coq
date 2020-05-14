@@ -1,3 +1,24 @@
+
+
+Goal forall x y:nat, x=y \/ x<>y.
+Proof.
+  induction x.
+  - induction y.
+    + left. reflexivity.
+    + right. discriminate.
+  - induction y.
+    + right. discriminate.
+    + destruct (IHx y).
+      * left. rewrite H. reflexivity.
+      * right. intro. inversion H0. apply H. exact H2.
+Qed.
+
+
+
+
+
+
+
 Definition eq_symm: forall {T:Type}, forall {a b:T}, a=b -> b=a :=
   fun (T:Type)(a b:T)(H:a=b) =>
     eq_ind a 
