@@ -1,3 +1,98 @@
+Structure group :=
+  {
+    G :> Set;
+
+    id : G;
+    op : G -> G -> G;
+    inv : G -> G;
+
+    op_assoc : forall (x y z : G), op x (op y z) = op (op x y) z;
+    op_inv_l : forall (x : G), id = op (inv x) x;
+    op_id_l : forall (x : G), x = op id x
+  }.
+
+Arguments id {g}.
+Arguments op {g} _ _.
+Arguments inv {g} _.
+
+Notation "x <.> y" := (op x y) (at level 50, left associativity).
+
+
+
+Theorem square_is_unique (G : group) :
+  forall (f : G), f <.> f = f -> f = id.
+Proof.
+  intros f H1.
+  rewrite <- (op_id_l G f), <- (op_inv_l G f), <- op_assoc. 
+  f_equal.
+  assumption.
+Qed.
+
+
+
+
+
+
+Inductive list {A:Type} :=
+| nil : list
+| cons : A -> list -> list.
+
+Definition natlist := @list nat.
+
+Fixpoint leb (a b:nat) : bool :=
+match a, b with
+| 0, _ => true
+| _, 0 => false
+| S aa, S bb => leb aa bb
+end.
+
+Fixpoint insert (a:nat) (arr:natlist) : natlist :=
+match arr with
+| nil => cons a nil
+| cons h tail => if (leb a h) 
+                 then cons a arr
+                 else cons h (insert a tail)
+end.
+
+Compute insert 25 (cons 10 (cons 20 (cons 30 (cons 40 nil)))).
+
+Fixpoint insertion_sort (arr : natlist) : natlist :=
+match arr with
+| nil => nil
+| cons h tail => insert h (insertion_sort tail)
+end.
+
+Compute insertion_sort (cons 50 (cons 30 (cons 10 (cons 20 (cons 40 nil))))).
+
+Fixpoint collect_le (p:nat) (arr:natlist) : natlist :=
+match arr with
+| nil => nil
+| cons h tail => if (leb h p)
+                 then cons h (collect_le p tail)
+                 else collect_le p tail
+end.
+
+Fixpoint collect_gt (p:nat) (arr:natlist) : natlist :=
+match arr with
+| nil => nil
+| cons h tail => if (leb h p)
+                 then collect_le p tail
+                 else cons h (collect_le p tail)
+end.
+
+Fixpoint merge (arr:natlist) (brr:natlist) :=
+match arr, brr with
+| nil, _ => brr
+| _, nil => arr
+| cons a ar, cons b br => if (leb a b)
+                          then cons a (merge ar brr)
+                          else cons b (merge arr br)
+end.
+
+
+
+
+
 
 
 Goal forall x y:nat, x=y \/ x<>y.
