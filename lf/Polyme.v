@@ -664,26 +664,26 @@ Proof. reflexivity.  Qed.
     and "filtering" the list, returning a new list containing just
     those elements for which the predicate returns [true]. *)
 
-Fixpoint filter {X:Type} (test: X->bool) (l:list X)
+Fixpoint filter (X:Type) (test: X->bool) (l:list X)
                 : (list X) :=
   match l with
   | []     => []
-  | h :: t => if test h then h :: (filter test t)
-                        else       filter test t
+  | h :: t => if test h then h :: (filter X test t)
+                        else       filter X test t
   end.
 
 (** For example, if we apply [filter] to the predicate [evenb]
     and a list of numbers [l], it returns a list containing just the
     even members of [l]. *)
 
-Example test_filter1: filter evenb [1;2;3;4] = [2;4].
+Example test_filter1: filter nat evenb [1;2;3;4] = [2;4].
 Proof. reflexivity.  Qed.
 
 Definition length_is_1 {X : Type} (l : list X) : bool :=
   (length l) =? 1.
 
 Example test_filter2:
-    filter length_is_1
+    filter (list nat) length_is_1
            [ [1; 2]; [3]; [4]; [5;6;7]; []; [8] ]
   = [ [3]; [4]; [8] ].
 Proof. reflexivity.  Qed.
@@ -1023,35 +1023,23 @@ Proof. reflexivity. Qed.
 Theorem fold_length_correct : forall X (l : list X),
   fold_length l = length l.
 Proof.
-  induction l.
-  - reflexivity.
-  - simpl. rewrite <- IHl. reflexivity.
-Qed.
-
-  
+(* FILL IN HERE *) Admitted.
 (** [] *)
+
 (** **** Exercise: 3 stars, standard (fold_map)  
 
     We can also define [map] in terms of [fold].  Finish [fold_map]
     below. *)
 
-Definition fold_map {X Y: Type} (f: X -> Y) (l: list X) : list Y :=
-  fold (fun (x:X)(ys:list Y) => f x :: ys)
-       l
-       [].
+Definition fold_map {X Y: Type} (f: X -> Y) (l: list X) : list Y
+  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
 
 (** Write down a theorem [fold_map_correct] in Coq stating that
    [fold_map] is correct, and prove it.  (Hint: again, remember that
    [reflexivity] simplifies expressions a bit more aggressively than
    [simpl].) *)
 
-Theorem fold_map_correct: forall X Y (f:X->Y)(li:list X),
-    map f li = fold_map f li.
-Proof.
-  induction li.
-  - reflexivity.
-  - simpl. rewrite IHli. reflexivity.
-Qed.
+(* FILL IN HERE *)
 
 (* Do not modify the following line: *)
 Definition manual_grade_for_fold_map : option (nat*string) := None.
@@ -1081,7 +1069,8 @@ Definition prod_curry {X Y Z : Type}
     the theorems below to show that the two are inverses. *)
 
 Definition prod_uncurry {X Y Z : Type}
-  (f : X -> Y -> Z) (p : X * Y) : Z := f (fst p) (snd p).
+  (f : X -> Y -> Z) (p : X * Y) : Z
+  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
 
 (** As a (trivial) example of the usefulness of currying, we can use it
     to shorten one of the examples that we saw above: *)
@@ -1100,17 +1089,13 @@ Theorem uncurry_curry : forall (X Y Z : Type)
                         x y,
   prod_curry (prod_uncurry f) x y = f x y.
 Proof.
-  intros.  reflexivity.
-Qed.
-
+  (* FILL IN HERE *) Admitted.
 
 Theorem curry_uncurry : forall (X Y Z : Type)
                         (f : (X * Y) -> Z) (p : X * Y),
   prod_uncurry (prod_curry f) p = f p.
 Proof.
-  intros. destruct p. reflexivity.
-Qed.
-
+  (* FILL IN HERE *) Admitted.
 (** [] *)
 
 (** **** Exercise: 2 stars, advanced (nth_error_informal)  
@@ -1129,7 +1114,6 @@ Qed.
 *)
 (* FILL IN HERE *)
 
-  
 (* Do not modify the following line: *)
 Definition manual_grade_for_informal_proof : option (nat*string) := None.
 (** [] *)
@@ -1177,53 +1161,52 @@ Definition three : cnat := @doit3times.
 (** Successor of a natural number: given a Church numeral [n],
     the successor [succ n] is a function that iterates its
     argument once more than [n]. *)
-Definition succ (n : cnat) : cnat :=
-  fun X f x => f(n X f x).
+Definition succ (n : cnat) : cnat
+  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
 
 Example succ_1 : succ zero = one.
-Proof. reflexivity. Qed.
+Proof. (* FILL IN HERE *) Admitted.
 
 Example succ_2 : succ one = two.
-Proof. reflexivity. Qed.
+Proof. (* FILL IN HERE *) Admitted.
 
 Example succ_3 : succ two = three.
-Proof. reflexivity. Qed.
+Proof. (* FILL IN HERE *) Admitted.
 
 (** [] *)
 
 (** **** Exercise: 1 star, advanced (church_plus)  *)
 
 (** Addition of two natural numbers: *)
-Definition plus (n m : cnat) : cnat :=
-  fun X f x =>  n X f (m X f x).
-  
+Definition plus (n m : cnat) : cnat
+  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
 
 Example plus_1 : plus zero one = one.
-Proof. reflexivity. Qed.
+Proof. (* FILL IN HERE *) Admitted.
 
 Example plus_2 : plus two three = plus three two.
-Proof. reflexivity. Qed.
+Proof. (* FILL IN HERE *) Admitted.
 
 Example plus_3 :
   plus (plus two two) three = plus one (plus three three).
-Proof. reflexivity. Qed.
+Proof. (* FILL IN HERE *) Admitted.
 
 (** [] *)
 
 (** **** Exercise: 2 stars, advanced (church_mult)  *)
 
 (** Multiplication: *)
-Definition mult (n m : cnat) : cnat :=
-  fun X f => n X (m X f) .
+Definition mult (n m : cnat) : cnat
+  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
 
 Example mult_1 : mult one one = one.
-Proof. reflexivity. Qed.
+Proof. (* FILL IN HERE *) Admitted.
 
 Example mult_2 : mult zero (plus three three) = zero.
-Proof. reflexivity. Qed.
+Proof. (* FILL IN HERE *) Admitted.
 
 Example mult_3 : mult two three = plus three three.
-Proof. reflexivity. Qed.
+Proof. (* FILL IN HERE *) Admitted.
 
 (** [] *)
 
@@ -1236,19 +1219,17 @@ Proof. reflexivity. Qed.
     a "Universe inconsistency" error, try iterating over a different
     type.  Iterating over [cnat] itself is usually problematic.) *)
 
-Definition exp (n m : cnat) : cnat :=
-  fun X => m X (n X).
-
-
+Definition exp (n m : cnat) : cnat
+  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
 
 Example exp_1 : exp two two = plus two two.
-Proof. reflexivity. Qed.
+Proof. (* FILL IN HERE *) Admitted.
 
 Example exp_2 : exp three zero = one.
-Proof. reflexivity. Qed.
+Proof. (* FILL IN HERE *) Admitted.
 
 Example exp_3 : exp three two = plus (mult two (mult two two)) one.
-Proof. reflexivity. Qed.
+Proof. (* FILL IN HERE *) Admitted.
 
 (** [] *)
 
