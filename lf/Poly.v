@@ -62,6 +62,8 @@ Inductive list (X:Type) : Type :=
 
 Check list.
 (* ===> list : Type -> Type *)
+Check nil.
+
 
 (** The parameter [X] in the definition of [list] automatically
     becomes a parameter to the constructors [nil] and [cons] -- that
@@ -309,6 +311,11 @@ Inductive list' {X:Type} : Type :=
   | nil'
   | cons' (x : X) (l : list').
 
+Check list.
+Check list'.
+
+Check cons' 10 nil'.
+
 (** Because [X] is declared as implicit for the _entire_ inductive
     definition including [list'] itself, we now have to write just
     [list'] whether we are talking about lists of numbers or booleans
@@ -359,6 +366,8 @@ Proof. reflexivity.  Qed.
 
 Fail Definition mynil := nil.
 
+Definition aaa := nil : list nat.
+
 (** (The [Fail] qualifier that appears before [Definition] can be
     used with _any_ command, and is used to ensure that that command
     indeed fails when executed. If the command does fail, Coq prints
@@ -395,6 +404,7 @@ Notation "x ++ y" := (app x y)
 
 Definition list123''' := [1; 2; 3].
 
+
 (* ----------------------------------------------------------------- *)
 (** *** Exercises *)
 
@@ -406,17 +416,30 @@ Definition list123''' := [1; 2; 3].
 Theorem app_nil_r : forall (X:Type), forall l:list X,
   l ++ [] = l.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  induction l.
+  - reflexivity.
+  - simpl. rewrite IHl. reflexivity.
+Qed.
+
 
 Theorem app_assoc : forall A (l m n:list A),
   l ++ m ++ n = (l ++ m) ++ n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  induction l.
+  - reflexivity.
+  - intros. simpl. rewrite IHl. reflexivity.
+Qed.
+
 
 Lemma app_length : forall (X:Type) (l1 l2 : list X),
   length (l1 ++ l2) = length l1 + length l2.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  induction l1.
+  - simpl. reflexivity.
+  - simpl. intro. rewrite IHl1. reflexivity.
+Qed.
+
+
 (** [] *)
 
 (** **** Exercise: 2 stars, standard, optional (more_poly_exercises)  
@@ -426,12 +449,21 @@ Proof.
 Theorem rev_app_distr: forall X (l1 l2 : list X),
   rev (l1 ++ l2) = rev l2 ++ rev l1.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  induction l1.
+  - simpl. intros. rewrite app_nil_r. reflexivity.
+  - simpl. intros. rewrite IHl1. rewrite app_assoc. reflexivity.
+Qed.
+  
 
 Theorem rev_involutive : forall X : Type, forall l : list X,
   rev (rev l) = l.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  induction l.
+  - reflexivity.
+  - simpl. rewrite rev_app_distr.
+    simpl. rewrite IHl. reflexivity.
+Qed.
+
 (** [] *)
 
 (* ================================================================= *)
@@ -490,6 +522,7 @@ Fixpoint combine {X Y : Type} (lx : list X) (ly : list Y)
   | _, [] => []
   | x :: tx, y :: ty => (x, y) :: (combine tx ty)
   end.
+
 
 (** **** Exercise: 1 star, standard, optional (combine_checks)  
 
