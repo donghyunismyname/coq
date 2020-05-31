@@ -394,7 +394,7 @@ Definition bag := natlist.
 Fixpoint count (v:nat) (s:bag) : nat :=
   match s with
   | nil => 0
-  | h::t => if (eqb v h)
+  | h::t => if (v =? h)
             then S (count v t)
             else (count v t)
   end.
@@ -458,7 +458,7 @@ Proof. reflexivity. Qed.
 Fixpoint remove_one (v:nat) (s:bag) : bag :=
   match s with
   | nil => nil
-  | h::t => if (eqb h v)
+  | h::t => if (h =? v)
             then t
             else h :: remove_one v t
   end.
@@ -484,7 +484,7 @@ Proof. reflexivity. Qed.
 Fixpoint remove_all (v:nat) (s:bag) : bag :=
   match s with
   | nil => nil
-  | h::t => if (eqb h v)
+  | h::t => if (h =? v)
             then remove_all v t
             else h :: remove_all v t
   end.
@@ -947,7 +947,7 @@ Fixpoint eqblist (l1 l2 : natlist) : bool :=
   | nil, nil => true
   | nil, _ => false
   | _, nil => false
-  | h1::t1, h2::t2 => if (eqb h1 h2)
+  | h1::t1, h2::t2 => if (h1 =? h2)
                       then eqblist t1 t2
                       else false
   end.
@@ -970,7 +970,7 @@ Theorem eqblist_refl : forall l:natlist,
 Proof.
   induction l.
   - reflexivity.
-  - enough (eqb n n = true).
+  - enough (n =? n = true).
     + simpl. rewrite H. exact IHl.
     + induction n.
       * reflexivity.

@@ -1237,7 +1237,7 @@ Proof. reflexivity. Qed.
     type.  Iterating over [cnat] itself is usually problematic.) *)
 
 Definition exp (n m : cnat) : cnat :=
-  fun X => m X (n X).
+  fun X => m (X->X) (n X).
 
 
 
