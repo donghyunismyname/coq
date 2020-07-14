@@ -1367,8 +1367,19 @@ Theorem evenb_double_conv : forall n,
   exists k, n = if evenb n then double k
                 else S (double k).
 Proof.
+  induction n.
+  - exists 0. reflexivity.
+  - destruct (evenb n) eqn:E.
+    + destruct IHn.
+      exists x.
+      rewrite evenb_S. rewrite E. simpl.
+      rewrite H. reflexivity.
+    + destruct IHn.
+      exists (S x).
+      rewrite evenb_S. rewrite E. simpl. 
+      rewrite H. reflexivity.
+Qed.
   (* Hint: Use the [evenb_S] lemma from [Induction.v]. *)
-  (* FILL IN HERE *) Admitted.
 (** [] *)
 
 Theorem even_bool_prop : forall n,
@@ -1497,6 +1508,23 @@ Proof.
   discriminate H.
 Qed.
 
+Example not_even_1001'eeeeeee : ~(exists k, 23 = double k).
+Proof.
+  intro. destruct H.
+  destruct x. discriminate.
+destruct x. discriminate.
+destruct x. discriminate.
+destruct x. discriminate.
+destruct x. discriminate.
+destruct x. discriminate.
+destruct x. discriminate.
+destruct x. discriminate.
+destruct x. discriminate.
+destruct x. discriminate.
+destruct x. discriminate.
+destruct x. discriminate. discriminate.
+Qed.
+
 (** Equality provides a complementary example: knowing that
     [n =? m = true] is generally of little direct help in the middle
     of a proof involving [n] and [m]; however, if we convert the
@@ -1526,12 +1554,25 @@ Qed.
 Lemma andb_true_iff : forall b1 b2:bool,
   b1 && b2 = true <-> b1 = true /\ b2 = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros.
+  split.
+  - destruct b1, b2.
+    tauto. tauto. tauto. tauto.
+  - intros. destruct H.
+    rewrite H. rewrite H0. reflexivity.
+Qed.
 
 Lemma orb_true_iff : forall b1 b2,
   b1 || b2 = true <-> b1 = true \/ b2 = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros.
+  split.
+  - destruct b1, b2.
+    tauto. tauto. tauto. tauto.
+  - intros. destruct H.
+    rewrite H. tauto.
+    rewrite H. destruct b1. tauto. tauto.
+Qed. 
 (** [] *)
 
 (** **** Exercise: 1 star, standard (eqb_neq)  
@@ -1543,7 +1584,17 @@ Proof.
 Theorem eqb_neq : forall x y : nat,
   x =? y = false <-> x <> y.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. split.
+  - intros. intro. rewrite H0 in H.
+    enough (forall n:nat, n=?n = true).
+    rewrite (H1 y) in H. discriminate.
+    induction n. reflexivity. simpl. exact IHn.
+  - intros. destruct (x=?y) eqn:E.
+    rewrite eqb_eq in E.
+    rewrite E in H. contradiction.
+    reflexivity.
+Qed.
+    
 (** [] *)
 
 (** **** Exercise: 3 stars, standard (eqb_list)  
@@ -1555,15 +1606,37 @@ Proof.
     definition is correct, prove the lemma [eqb_list_true_iff]. *)
 
 Fixpoint eqb_list {A : Type} (eqb : A -> A -> bool)
-                  (l1 l2 : list A) : bool
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+                  (l1 l2 : list A) : bool :=
+match l1, l2 with
+| [], [] => true
+| [], _  => false
+| _, []  => false
+| x::xs, y::ys => if eqb x y
+                  then eqb_list eqb xs ys
+                  else false
+end.
 
 Lemma eqb_list_true_iff :
   forall A (eqb : A -> A -> bool),
     (forall a1 a2, eqb a1 a2 = true <-> a1 = a2) ->
     forall l1 l2, eqb_list eqb l1 l2 = true <-> l1 = l2.
 Proof.
-(* FILL IN HERE *) Admitted.
+  intros A eqb Heqb.
+  induction l1 as [|x xs], l2 as [|y ys].
+  - split. reflexivity. reflexivity.
+  - split. discriminate. discriminate.
+  - split. discriminate. discriminate.
+  - split.
+    + simpl. destruct (eqb x y) eqn:E.
+      * rewrite IHxs. intro. rewrite Heqb in E.
+        rewrite H. rewrite E.
+        reflexivity.
+      * discriminate.
+    + intros. inversion H. simpl.
+      assert (y = y). reflexivity. rewrite <- Heqb in H0.
+      rewrite H0. 
+      rewrite <- H2. rewrite IHxs. reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars, standard, recommended (All_forallb)  
