@@ -1653,11 +1653,18 @@ Fixpoint forallb {X : Type} (test : X -> bool) (l : list X) : bool :=
 (** Prove the theorem below, which relates [forallb] to the [All]
     property of the above exercise. *)
 
+
 Theorem forallb_true_iff : forall X test (l : list X),
    forallb test l = true <-> All (fun x => test x = true) l.
 Proof.
-  (* FILL IN HERE *) Admitted.
-
+  induction l.
+  - split.
+    + intros. simpl. reflexivity.
+    + intros. simpl. reflexivity.
+  - simpl. rewrite <- IHl.
+    destruct (test x), (forallb test l).
+    tauto. tauto. tauto. tauto.
+Qed.
 (** Are there any important properties of the function [forallb] which
     are not captured by this specification? *)
 
@@ -1794,7 +1801,17 @@ Qed.
 Theorem excluded_middle_irrefutable: forall (P:Prop),
   ~ ~ (P \/ ~ P).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  enough (forall A B:Prop, ~(A\/B) -> (~A /\ ~B)).
+  - intros. intro. apply H in H0.
+    destruct H0. apply H1. exact H0.
+  - intros. split.
+    + intro.
+      assert (A \/ B). left. exact H0.
+      apply H. exact H1.
+    + intro.
+      assert (A \/ B). right. exact H0.
+      apply H. exact H1.
+Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars, advanced (not_exists_dist)  
@@ -1815,7 +1832,14 @@ Theorem not_exists_dist :
   forall (X:Type) (P : X -> Prop),
     ~ (exists x, ~ P x) -> (forall x, P x).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  unfold excluded_middle.
+  intros.
+  assert (P x \/ ~ P x). apply H.
+  destruct H1.
+  exact H1.
+  assert (exists x, ~ P x). exists x. apply H1.
+  contradiction.
+Qed.
 (** [] *)
 
 (** **** Exercise: 5 stars, standard, optional (classical_axioms)  
