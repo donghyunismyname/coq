@@ -148,7 +148,10 @@ Qed.
 Theorem ev_double : forall n,
   even (double n).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  induction n.
+  - simpl. apply ev_0.
+  - simpl. apply ev_SS. exact IHn.
+Qed.
 (** [] *)
 
 (* ################################################################# *)
@@ -292,7 +295,9 @@ Theorem one_not_even' : ~ even 1.
 Theorem SSSSev__even : forall n,
   even (S (S (S (S n)))) -> even n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. inversion H. inversion H1.
+  exact H3.
+Qed.
 (** [] *)
 
 (** **** Exercise: 1 star, standard (even5_nonsense)  
@@ -302,7 +307,8 @@ Proof.
 Theorem even5_nonsense :
   even 5 -> 2 + 2 = 9.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intro. inversion H. inversion H1. inversion H3.
+Qed.
 (** [] *)
 
 (** The [inversion] tactic does quite a bit of work. When
@@ -452,7 +458,13 @@ Qed.
 (** **** Exercise: 2 stars, standard (ev_sum)  *)
 Theorem ev_sum : forall n m, even n -> even m -> even (n + m).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros.
+  induction H, H0.
+  - apply ev_0.
+  - simpl. apply ev_SS. exact H0.
+  - simpl. apply ev_SS. exact IHeven.
+  - simpl. apply ev_SS. exact IHeven.
+Qed.
 (** [] *)
 
 (** **** Exercise: 4 stars, advanced, optional (even'_ev)  
@@ -472,7 +484,31 @@ Inductive even' : nat -> Prop :=
 
 Theorem even'_ev : forall n, even' n <-> even n.
 Proof.
- (* FILL IN HERE *) Admitted.
+  intros. split.
+  - rewrite ev_even_iff.
+    intro. induction H.
+    + exists 0. reflexivity.
+    + exists 1. reflexivity.
+    + destruct IHeven'1 as [a].
+      destruct IHeven'2 as [b].
+      exists (a+b).
+      rewrite H1. rewrite H2.
+      enough (forall a b:nat, double a + double b = double (a+b)).
+      * apply H3.
+      * induction a0, b0.
+        reflexivity. reflexivity. simpl.
+        assert (forall n, n + 0 = n).
+        induction n0. reflexivity. simpl. rewrite IHn0. reflexivity.
+        rewrite H3. rewrite H3. reflexivity.
+        simpl. rewrite plus_comm. rewrite (plus_comm a0). simpl.
+        rewrite plus_comm. rewrite (plus_comm b0).
+        rewrite IHa0. reflexivity.
+  - intro. induction H.
+    + apply even'_0.
+    + apply (even'_sum 2 n).
+      apply even'_2.
+      apply IHeven.
+Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars, advanced, recommended (ev_ev__ev)  
@@ -483,7 +519,12 @@ Proof.
 Theorem ev_ev__ev : forall n m,
   even (n+m) -> even n -> even m.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros.
+  induction H0. simpl in H.
+  exact H.
+  apply IHeven.
+  inversion H. exact H2.
+Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars, standard, optional (ev_plus_plus)  
@@ -495,7 +536,24 @@ Proof.
 Theorem ev_plus_plus : forall n m p,
   even (n+m) -> even (n+p) -> even (m+p).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros.
+  apply (ev_ev__ev (n+n) (m+p)).
+  - enough (n+n+(m+p) = (n+m)+(n+p)).
+    rewrite H1.
+    apply ev_sum. exact H. exact H0.
+    rewrite <- plus_assoc.
+    rewrite <- plus_assoc.
+    rewrite (plus_assoc n m p).
+    rewrite (plus_assoc m n p).
+    rewrite (plus_comm n m).
+    reflexivity.
+  - enough (forall n:nat, even (n+n)).
+    apply H1.
+    induction n0.
+    apply ev_0.
+    simpl. rewrite plus_comm. simpl.
+    apply ev_SS. exact IHn0.
+Qed.
 (** [] *)
 
 (* ################################################################# *)
@@ -507,6 +565,27 @@ Proof.
     is provable.  In the same way, a two-argument proposition can be
     thought of as a _relation_ -- i.e., it defines a set of pairs for
     which the proposition is provable. *)
+
+
+Goal forall a b:nat, a <= b <-> exists p, p + a = b.
+intros. split.
+  - intro.
+    induction H.
+    exists 0. reflexivity.
+    destruct IHle. exists (S x).
+    simpl. rewrite H0. reflexivity.
+  - generalize b.
+    induction b0 as [|c].
+    + intro. destruct H.
+      enough (forall a b:nat, a+b=0 -> b=0).
+      apply H0 in H. rewrite H. apply le_n.
+      induction b0. tauto. rewrite plus_comm. simpl. discriminate.
+    + intros.
+      destruct H. destruct x.
+      * simpl in H. rewrite H. apply le_n.
+      * apply le_S. apply IHc.
+        exists x. simpl in H. injection H. tauto.
+Qed.
 
 Module Playground.
 
@@ -584,6 +663,8 @@ Inductive next_even : nat -> nat -> Prop :=
     Define an inductive binary relation [total_relation] that holds
     between every pair of natural numbers. *)
 
+
+
 (* FILL IN HERE 
 
     [] *)
@@ -615,23 +696,36 @@ Inductive next_even : nat -> nat -> Prop :=
     we are going to need later in the course.  The proofs make good
     practice exercises. *)
 
+Print le.
+
 Lemma le_trans : forall m n o, m <= n -> n <= o -> m <= o.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros a b c ab bc.
+  induction bc as [|x].
+  - exact ab.
+  - apply le_S. exact IHbc.
+Qed.
 
 Theorem O_le_n : forall n,
   0 <= n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  induction n.
+  apply le_n.
+  apply le_S. apply IHn.
+Qed.
 
 Theorem n_le_m__Sn_le_Sm : forall n m,
   n <= m -> S n <= S m.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros.
+  induction H.
+  - apply le_n.
+  - apply le_S. apply IHle.
+Qed.
 
 Theorem Sn_le_Sm__n_le_m : forall n m,
   S n <= S m -> n <= m.
-Proof.
+Proof. 
   (* FILL IN HERE *) Admitted.
 
 Theorem le_plus_l : forall a b,
