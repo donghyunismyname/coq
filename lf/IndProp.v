@@ -725,31 +725,57 @@ Qed.
 
 Theorem Sn_le_Sm__n_le_m : forall n m,
   S n <= S m -> n <= m.
-Proof. 
-  (* FILL IN HERE *) Admitted.
+Proof.
+  intros.
+  inversion H as [|a].
+  apply le_n.
+  apply (le_trans n (S n) m).
+  apply le_S. apply le_n.
+  exact H0.
+Qed.
 
 Theorem le_plus_l : forall a b,
   a <= a + b.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  induction b.
+  - rewrite plus_comm. simpl. apply le_n.
+  - rewrite plus_comm. simpl. apply le_S.
+    rewrite plus_comm. exact IHb.
+Qed.
 
 Theorem plus_lt : forall n1 n2 m,
   n1 + n2 < m ->
   n1 < m /\ n2 < m.
 Proof.
- unfold lt.
- (* FILL IN HERE *) Admitted.
+  unfold lt.
+  intros. split.
+  - apply (le_trans (S n1) (S (n1 + n2)) m).
+    apply (le_plus_l (S n1) n2).
+    exact H.
+  - apply (le_trans (S n2) (S (n1 + n2)) m).
+    rewrite plus_comm. apply (le_plus_l (S n2) n1).
+    exact H.
+Qed.
 
 Theorem lt_S : forall n m,
   n < m ->
   n < S m.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  unfold lt.
+  intro n. apply le_S.
+Qed.
 
 Theorem leb_complete : forall n m,
   n <=? m = true -> n <= m.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  induction n, m.
+  - intros. apply le_n.
+  - intros. apply (le_plus_l 0 (S m)).
+  - intros. inversion H.
+  - intros. inversion H.
+    apply IHn in H1. 
+    apply n_le_m__Sn_le_Sm. exact H1.
+Qed.
 
 (** Hint: The next one may be easiest to prove by induction on [m]. *)
 
@@ -757,21 +783,40 @@ Theorem leb_correct : forall n m,
   n <= m ->
   n <=? m = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. induction H.
+  - enough (forall n:nat, n<=?n = true).
+    apply H.
+    induction n0. reflexivity. simpl. exact IHn0.
+  - enough (forall a b:nat, (a<=?b)=true -> (a<=?(S b))=true ).
+    apply H0. apply IHle.
+    induction a, b.
+    + tauto.
+    + tauto.
+    + intros. inversion H0.
+    + simpl. apply IHa.
+Qed.
 
 (** Hint: This one can easily be proved without using [induction]. *)
 
 Theorem leb_true_trans : forall n m o,
   n <=? m = true -> m <=? o = true -> n <=? o = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. 
+  apply leb_correct.
+  apply (le_trans n m o).
+  apply leb_complete. exact H.
+  apply leb_complete. exact H0.
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars, standard, optional (leb_iff)  *)
 Theorem leb_iff : forall n m,
   n <=? m = true <-> n <= m.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. split.
+  apply leb_complete.
+  apply leb_correct.
+Qed.
 (** [] *)
 
 Module R.
@@ -814,13 +859,36 @@ Definition manual_grade_for_R_provability : option (nat*string) := None.
     Figure out which function; then state and prove this equivalence
     in Coq? *)
 
-Definition fR : nat -> nat -> nat
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+Definition fR : nat -> nat -> nat := plus.
 
 Theorem R_equiv_fR : forall m n o, R m n o <-> fR m n = o.
 Proof.
-(* FILL IN HERE *) Admitted.
-(** [] *)
+  unfold fR. 
+  split.
+  - intro. induction H.
+    + reflexivity.
+    + simpl. rewrite IHR. reflexivity.
+    + rewrite plus_comm. simpl. 
+      rewrite plus_comm. rewrite IHR. reflexivity.
+    + simpl in IHR. rewrite plus_comm in IHR. 
+      simpl in IHR. rewrite plus_comm in IHR.
+      injection IHR. tauto.
+    + rewrite plus_comm. apply IHR.
+  - intro. rewrite <- H.
+    enough (forall a b:nat, R a b (a+b)). apply H0.
+    induction a, b.
+    + apply c1.
+    + simpl. apply c3.
+      enough (forall a:nat, R 0 a a). apply H0.
+      induction a. apply c1. apply c3. apply IHa.
+    + rewrite plus_comm. simpl. apply c2.
+      assert (R a 0 (a+0)). apply IHa.
+      rewrite plus_comm in H0. simpl in H0.
+      exact H0.
+    + simpl. apply c2. rewrite plus_comm. simpl. 
+      rewrite plus_comm. apply c3.
+      apply IHa.
+Qed.
 
 End R.
 
@@ -862,24 +930,43 @@ End R.
       Hint: choose your induction carefully! *)
 
 Inductive subseq : list nat -> list nat -> Prop :=
-(* FILL IN HERE *)
+| ss1 xs                    : subseq [] xs
+| ss2 xs (y:nat) ys         : subseq xs ys -> subseq xs (y::ys)
+| ss3 (x:nat) xs (y:nat) ys : x=y -> subseq xs ys -> subseq (x::xs) (y::ys)
 .
+
 
 Theorem subseq_refl : forall (l : list nat), subseq l l.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  induction l.
+  apply ss1.
+  apply ss3. reflexivity. exact IHl.
+Qed.
+
 
 Theorem subseq_app : forall (l1 l2 l3 : list nat),
   subseq l1 l2 ->
   subseq l1 (l2 ++ l3).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros.
+  induction H.
+  - apply ss1.
+  - simpl. apply ss2. exact IHsubseq.
+  - simpl. apply ss3. exact H. exact IHsubseq.
+Qed.
 
 Theorem subseq_trans : forall (l1 l2 l3 : list nat),
   subseq l1 l2 ->
   subseq l2 l3 ->
   subseq l1 l3.
 Proof.
+  intros.
+  induction H0.
+  - inversion H. apply ss1.
+  - apply ss2. apply IHsubseq. apply H.
+  - assert (subseq (x::xs) (y::ys)).
+    apply ss3. exact H0. exact H1.
+  
   (* FILL IN HERE *) Admitted.
 (** [] *)
 
