@@ -960,12 +960,21 @@ Theorem subseq_trans : forall (l1 l2 l3 : list nat),
   subseq l2 l3 ->
   subseq l1 l3.
 Proof.
-  intros.
+  induction l3.
+  - intros. inversion H0.
+    rewrite H1. apply H.
+  - intros. induction H.
+    + apply ss1.
+    + apply ss2. apply IHl3. apply ss2.
+  
+  
+
   induction H0.
   - inversion H. apply ss1.
   - apply ss2. apply IHsubseq. apply H.
   - assert (subseq (x::xs) (y::ys)).
     apply ss3. exact H0. exact H1.
+    
   
   (* FILL IN HERE *) Admitted.
 (** [] *)
