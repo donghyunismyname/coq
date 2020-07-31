@@ -955,28 +955,30 @@ Proof.
   - simpl. apply ss3. exact H. exact IHsubseq.
 Qed.
 
+Check subseq_ind.
+Check le_ind.
+
+
 Theorem subseq_trans : forall (l1 l2 l3 : list nat),
   subseq l1 l2 ->
   subseq l2 l3 ->
   subseq l1 l3.
 Proof.
-  induction l3.
-  - intros. inversion H0.
-    rewrite H1. apply H.
-  - intros. induction H.
-    + apply ss1.
-    + apply ss2. apply IHl3. apply ss2.
-  
-  
-
+  intros. generalize dependent l1.
   induction H0.
-  - inversion H. apply ss1.
-  - apply ss2. apply IHsubseq. apply H.
-  - assert (subseq (x::xs) (y::ys)).
-    apply ss3. exact H0. exact H1.
-    
-  
-  (* FILL IN HERE *) Admitted.
+  - intros. inversion H. apply ss1.
+  - intros. apply ss2. apply IHsubseq. apply H.
+  - intros. remember (x::xs) as xxx.
+    induction H1 as [|bs c cs|b bs c cs].
+    + apply ss1.
+    + apply ss2. apply IHsubseq.
+      inversion Heqxxx. rewrite <- H4. exact H1.
+    + apply ss3. inversion Heqxxx.
+      rewrite H1, H4, H. reflexivity.
+      apply IHsubseq.
+      inversion Heqxxx.
+      rewrite <- H5. exact H2.
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars, standard, optional (R_provability2)  
