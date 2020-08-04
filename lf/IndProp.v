@@ -1211,13 +1211,17 @@ Qed.
 Lemma empty_is_empty : forall T (s : list T),
   ~ (s =~ EmptySet).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. intro. inversion H.
+Qed.
 
 Lemma MUnion' : forall T (s : list T) (re1 re2 : @reg_exp T),
   s =~ re1 \/ s =~ re2 ->
   s =~ Union re1 re2.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. destruct H.
+  apply MUnionL. apply H.
+  apply MUnionR. apply H.
+Qed.
 
 (** The next lemma is stated in terms of the [fold] function from the
     [Poly] chapter: If [ss : list (list T)] represents a sequence of
@@ -1228,7 +1232,13 @@ Lemma MStar' : forall T (ss : list (list T)) (re : reg_exp),
   (forall s, In s ss -> s =~ re) ->
   fold app ss [] =~ Star re.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  induction ss.
+  - intros. simpl. apply MStar0.
+  - intros. simpl. apply MStarApp.
+    apply H. simpl. left. reflexivity.
+    apply IHss. intros. apply H. 
+    simpl. right. apply H0.
+Qed.
 (** [] *)
 
 (** **** Exercise: 4 stars, standard, optional (reg_exp_of_list_spec)  
@@ -1239,7 +1249,23 @@ Proof.
 Lemma reg_exp_of_list_spec : forall T (s1 s2 : list T),
   s1 =~ reg_exp_of_list s2 <-> s1 = s2.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. generalize dependent s1.
+  induction s2.
+  - split. 
+    + intros. inversion H. reflexivity.
+    + intros. rewrite H. apply MEmpty.
+  - split.
+    + intros. inversion H. 
+      inversion H3. simpl.
+      enough (s3 = s2). rewrite H6. reflexivity.
+      apply IHs2. apply H4.
+    + intros. rewrite H.
+      simpl. apply (MApp [x] (Char x)).
+      apply MChar.
+      rewrite IHs2. reflexivity.
+Qed.
+      
+    
 (** [] *)
 
 (** Since the definition of [exp_match] has a recursive
