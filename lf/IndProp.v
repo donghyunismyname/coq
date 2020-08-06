@@ -1348,13 +1348,63 @@ Qed.
     regular expression matches some string. Prove that your function
     is correct. *)
 
-Fixpoint re_not_empty {T : Type} (re : @reg_exp T) : bool
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+Fixpoint re_not_empty {T : Type} (re : @reg_exp T) : bool :=
+  match re with
+  | EmptySet => false
+  | EmptyStr => true
+  | Char t => true
+  | App r1 r2 => re_not_empty r1 && re_not_empty r2
+  | Union r1 r2 => re_not_empty r1 || re_not_empty r2
+  | Star r => true
+  end.
 
 Lemma re_not_empty_correct : forall T (re : @reg_exp T),
   (exists s, s =~ re) <-> re_not_empty re = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  induction re.
+  - split.
+    + intros. destruct H. inversion H.
+    + intros. inversion H.
+  - split.
+    + intros. simpl. reflexivity.
+    + intros. exists nil. apply MEmpty.
+  - split.
+    + intros. simpl. reflexivity.
+    + intros. exists [t]. apply MChar.
+  - simpl. enough (
+    (exists s, s=~re1) /\ (exists s, s=~re2) 
+    <-> (exists s, s=~ App re1 re2)).
+    rewrite <- H.
+    rewrite IHre1. rewrite IHre2.
+    destruct (re_not_empty re1), (re_not_empty re2).
+    tauto. tauto. tauto. tauto.
+    split.
+    + intros. destruct H. destruct H. destruct H0.
+      exists (x++x0). apply MApp. apply H. apply H0.
+    + intros. destruct H. inversion H.
+      split.
+      exists s1. apply H3.
+      exists s2. apply H4.
+  - simpl. enough (
+    (exists s, s=~re1) \/ (exists s, s=~re2)
+    <-> (exists s, s=~ Union re1 re2)).
+    rewrite <- H.
+    rewrite IHre1. rewrite IHre2.
+    destruct (re_not_empty re1), (re_not_empty re2).
+    tauto. tauto. tauto. tauto.
+    split.
+    + intros.
+      destruct H.
+      * destruct H. exists x. apply MUnionL. apply H.
+      * destruct H. exists x. apply MUnionR. apply H.
+    + intros. destruct H.
+      inversion H.
+      * left. exists x. apply H2.
+      * right. exists x. apply H1.
+  - simpl. split.
+    intros. reflexivity.
+    intros. exists []. apply MStar0.
+Qed.
 (** [] *)
 
 (* ================================================================= *)
@@ -1493,6 +1543,33 @@ Lemma MStar'' : forall T (s : list T) (re : reg_exp),
     s = fold app ss []
     /\ forall s', In s' ss -> s' =~ re.
 Proof.
+  intros.
+  remember (Star re) as sre.
+  induction H.
+  discriminate.
+  discriminate.
+  discriminate.
+  discriminate.
+  discriminate.
+  exists []. split.
+  reflexivity.
+  intros. inversion H.
+  generalize dependent s2. intros.
+
+  remember (Star re0) as sre0.
+  generalize dependent s2. intros.
+  induction H0.
+  discriminate. discriminate. discriminate.
+  discriminate. discriminate.
+  
+    
+
+
+ apply IHexp_match2 in Heqsre.
+    destruct Heqsre.
+    destruct Heqsre.
+    exists
+  
   (* FILL IN HERE *) Admitted.
 (** [] *)
 
