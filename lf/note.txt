@@ -1,0 +1,3 @@
+undone exercises
+Logic   : end
+IndProp : end

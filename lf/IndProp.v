@@ -1546,31 +1546,23 @@ Proof.
   intros.
   remember (Star re) as sre.
   induction H.
-  discriminate.
-  discriminate.
-  discriminate.
-  discriminate.
-  discriminate.
-  exists []. split.
-  reflexivity.
-  intros. inversion H.
-  generalize dependent s2. intros.
-
-  remember (Star re0) as sre0.
-  generalize dependent s2. intros.
-  induction H0.
-  discriminate. discriminate. discriminate.
-  discriminate. discriminate.
-  
-    
-
-
- apply IHexp_match2 in Heqsre.
+  - discriminate.
+  - discriminate.
+  - discriminate.
+  - discriminate.
+  - discriminate.
+  - exists []. split.
+    reflexivity.
+    intros. inversion H.
+  - inversion Heqsre.
+    apply IHexp_match2 in Heqsre.
     destruct Heqsre.
-    destruct Heqsre.
-    exists
-  
-  (* FILL IN HERE *) Admitted.
+    exists (s1::x). split.
+    + simpl. destruct H1. rewrite <- H1. reflexivity.
+    + simpl. intros. destruct H3.
+      * rewrite <- H3. rewrite <- H2. apply H.
+      * destruct H1. apply H4. apply H3.
+Qed.
 (** [] *)
 
 (** **** Exercise: 5 stars, advanced (pumping)  
@@ -1628,6 +1620,28 @@ Qed.
     a (constructive!) way to generate strings matching [re] that are
     as long as we like. *)
 
+
+Lemma lem_match_star_star: forall T (ss tt:list T) re, 
+  ss =~ Star re -> tt =~ Star re -> (ss++tt) =~ Star re.
+Proof.
+  intros. remember (Star re) as sre.
+  induction H.
+  inversion Heqsre.
+  inversion Heqsre.
+  inversion Heqsre.
+  inversion Heqsre.
+  inversion Heqsre.
+  apply H0.
+  rewrite <- app_assoc. apply MStarApp.
+  apply H.
+  apply IHexp_match2.
+  apply Heqsre.
+  apply H0.
+Qed.
+  
+
+
+
 Lemma pumping : forall T (re : @reg_exp T) s,
   s =~ re ->
   pumping_constant re <= length s ->
@@ -1654,8 +1668,67 @@ Proof.
        | re | s1 s2 re Hmatch1 IH1 Hmatch2 IH2 ].
   - (* MEmpty *)
     simpl. omega.
-  (* FILL IN HERE *) Admitted.
-
+  - simpl. omega.
+  - simpl. intros.
+    assert (forall a b aa bb, a+b<=aa+bb -> a<=aa \/ b<=bb).
+    intros. omega.
+    rewrite app_length in H. apply H0 in H.
+    destruct H.
+    + apply IH1 in H. 
+      destruct H as [x]. destruct H as [y]. destruct H as [z].
+      exists x, y, (z++s2). split.
+      * destruct H. rewrite H. 
+        rewrite <- (app_assoc T x (y++z) s2).
+        rewrite <- (app_assoc T y z s2).
+        reflexivity.
+      * split. destruct H. destruct H1. apply H1.
+        intros.
+        rewrite app_assoc. rewrite app_assoc.
+        apply MApp. rewrite <- app_assoc.
+        destruct H. destruct H1. apply H2.
+        apply Hmatch2.
+    + apply IH2 in H. 
+      destruct H as [x]. destruct H as [y]. destruct H as [z].
+      exists (s1++x), y, z. split.
+      * destruct H. rewrite H.
+        rewrite app_assoc. reflexivity.
+      * split. destruct H. destruct H1. apply H1.
+        intros.
+        rewrite <- app_assoc. apply MApp.
+        apply Hmatch1.
+        destruct H. destruct H1. apply H2.
+  - simpl.
+    intros.
+    assert (pumping_constant re1 <= length s1). omega.
+    apply IH in H0. 
+    destruct H0 as [x]. destruct H0 as [y]. destruct H0 as [z].
+    destruct H0. destruct H1.
+    exists x, y, z. split. apply H0. split. apply H1.
+    intros. apply MUnionL. apply H2.
+  - simpl.
+    intros.
+    assert (pumping_constant re2 <= length s2). omega.
+    apply IH in H0. 
+    destruct H0 as [x]. destruct H0 as [y]. destruct H0 as [z].
+    destruct H0. destruct H1.
+    exists x, y, z. split. apply H0. split. apply H1.
+    intros. apply MUnionR. apply H2.
+  - simpl. omega.
+  - simpl.
+    simpl in IH2.
+    intros. exists [], (s1++s2), []. split.
+    simpl. Search app_nil_r. rewrite app_nil_r.
+    reflexivity. split.
+    + intro. rewrite H0 in H. inversion H.
+    + intro. simpl. rewrite app_nil_r. 
+      induction m.
+      * simpl. apply MStar0.
+      * simpl.
+        enough (forall ss tt, ss=~Star re -> tt=~Star re -> ss++tt =~ Star re ).
+        apply H0. apply MStarApp. apply Hmatch1. apply Hmatch2.
+        apply IHm.
+        intros. apply lem_match_star_star. apply H0. apply H1.
+Qed.
 End Pumping.
 (** [] *)
 

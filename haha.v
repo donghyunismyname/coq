@@ -1,3 +1,14 @@
+Lemma lem1: forall n, 0 <= n.
+  induction n. apply le_n. apply le_S. apply IHn.
+Qed.
+
+Goal forall a b aa bb, a+b<=aa+bb -> a<=aa \/ b<=bb.
+  induction aa.
+  intros. right. simpl in H.
+
+
+
+
 Print eq_ind.
 Print nat_rect.
 Print nat_rec.
