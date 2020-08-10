@@ -1769,6 +1769,13 @@ Qed.
     which is generally not directly useful, this principle gives us
     right away the assumption we really need: [n = m]. *)
 
+Print le.
+Print list.
+Check le_S.
+Check le_n.
+Check @cons.
+
+
 Inductive reflect (P : Prop) : bool -> Prop :=
 | ReflectT (H :   P) : reflect P true
 | ReflectF (H : ~ P) : reflect P false.
@@ -1802,7 +1809,11 @@ Qed.
 (** **** Exercise: 2 stars, standard, recommended (reflect_iff)  *)
 Theorem reflect_iff : forall P b, reflect P b -> (P <-> b = true).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. destruct H.
+  - split. intros. reflexivity. intros. apply H.
+  - split. intros. contradiction.
+    intros. discriminate.
+Qed.
 (** [] *)
 
 (** The advantage of [reflect] over the normal "if and only if"
@@ -1853,7 +1864,15 @@ Fixpoint count n l :=
 Theorem eqbP_practice : forall n l,
   count n l = 0 -> ~(In n l).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  induction l.
+  - intros. intro. inversion H0.
+  - simpl. destruct (eqbP n x).
+    + discriminate.
+    + intros. intro. destruct H1.
+      apply H. rewrite H1. reflexivity.
+      apply IHl. apply H0. apply H1.
+Qed.
+  
 (** [] *)
 
 (** This small example shows how reflection gives us a small gain in
