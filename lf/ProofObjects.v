@@ -176,10 +176,15 @@ Print ev_4'''.
 
 Theorem ev_8 : even 8.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  apply ev_SS.
+  apply ev_SS.
+  apply ev_SS, ev_SS.
+  apply ev_0.
+Qed.
 
-Definition ev_8' : even 8
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+Definition ev_8' : even 8 :=
+  ev_SS 6 (ev_SS 4 (ev_SS 2 (ev_SS 0 ev_0))).
+
 (** [] *)
 
 (* ################################################################# *)
@@ -282,6 +287,7 @@ Definition ev_plus2'' : Prop :=
     Naturally, the answer is yes! *)
 
 Definition add1 : nat -> nat.
+Show Proof.
 intro n.
 Show Proof.
 apply S.
@@ -381,8 +387,12 @@ Definition and_comm' P Q : P /\ Q <-> Q /\ P :=
 
     Construct a proof object demonstrating the following proposition. *)
 
-Definition conj_fact : forall P Q R, P /\ Q -> Q /\ R -> P /\ R
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+Definition conj_fact : forall P Q R, P /\ Q -> Q /\ R -> P /\ R :=
+  fun P Q R pq qr =>
+    match pq with
+    | conj p q => match qr with
+             | conj q r => conj p r end end.
+    
 (** [] *)
 
 (* ================================================================= *)
@@ -411,8 +421,12 @@ End Or.
     Try to write down an explicit proof object for [or_commut] (without
     using [Print] to peek at the ones we already defined!). *)
 
-Definition or_comm : forall P Q, P \/ Q -> Q \/ P
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+Definition or_comm : forall P Q, P \/ Q -> Q \/ P :=
+  fun P Q H => 
+    match H with
+    | or_introl x => or_intror x
+    | or_intror x => or_introl x
+    end.
 (** [] *)
 
 (* ================================================================= *)
@@ -451,9 +465,9 @@ Definition some_nat_is_even : exists n, even n :=
 (** **** Exercise: 2 stars, standard, optional (ex_ev_Sn)  
 
     Complete the definition of the following proof object: *)
-
-Definition ex_ev_Sn : ex (fun n => even (S n))
-  (* REPLACE THIS LINE WITH ":= _your_definition_ ." *). Admitted.
+Check (ex_intro (fun n => even (S n)) 1).
+Definition ex_ev_Sn : ex (fun n => even (S n)) :=
+  ex_intro (fun n => even (S n)) 1 (ev_SS 0 ev_0).
 (** [] *)
 
 (* ================================================================= *)
@@ -545,7 +559,10 @@ Definition singleton : forall (X:Type) (x:X), []++[x] == x::[]  :=
 Lemma equality__leibniz_equality : forall (X : Type) (x y: X),
   x == y -> forall P:X->Prop, P x -> P y.
 Proof.
-(* FILL IN HERE *) Admitted.
+  intros. Show Proof.
+  destruct H. Show Proof.
+  apply H0. Show Proof.
+Qed.
 (** [] *)
 
 (** **** Exercise: 5 stars, standard, optional (leibniz_equality__equality)  
@@ -556,8 +573,9 @@ Proof.
 Lemma leibniz_equality__equality : forall (X : Type) (x y: X),
   (forall P:X->Prop, P x -> P y) -> x == y.
 Proof.
-(* FILL IN HERE *) Admitted.
-
+  intros. Show Proof.
+  apply (H (fun a:X => x==a) (eq_refl x)). Show Proof.
+Qed.
 (** [] *)
 
 End MyEquality.
