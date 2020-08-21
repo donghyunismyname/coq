@@ -63,8 +63,30 @@ Proof.
 Theorem plus_one_r' : forall n:nat,
   n + 1 = S n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  apply nat_ind. Show Proof.
+  reflexivity. Show Proof.
+  intros. Show Proof. 
+  simpl. Show Proof.
+  rewrite H. Show Proof.
+  reflexivity. Show Proof.
+Qed.
 (** [] *)
+
+Theorem aaa: forall a b:bool, negb (a && b) = negb a || negb b.
+Proof.
+  intro. Show Proof.
+  apply bool_ind. Show Proof.
+  generalize dependent a. Show Proof.
+  apply bool_ind. Show Proof.
+  reflexivity. Show Proof.
+  reflexivity. Show Proof.
+  generalize dependent a. Show Proof.
+  apply bool_ind. Show Proof.
+  reflexivity. Show Proof.
+  reflexivity. Show Proof.
+Qed.
+
+
 
 (** Coq generates induction principles for every datatype defined with
     [Inductive], including those that aren't recursive.  Although of
@@ -110,6 +132,7 @@ Inductive rgb : Type :=
   | blue.
 Check rgb_ind.
 (** [] *)
+
 
 (** Here's another example, this time with one of the constructors
     taking some arguments. *)
@@ -167,6 +190,8 @@ Inductive byntree : Type :=
  | nbranch (yn : yesno) (t1 t2 : byntree).
 (** [] *)
 
+Check byntree_ind.
+
 (** **** Exercise: 1 star, standard, optional (ex_set)  
 
     Here is an induction principle for an inductively defined
@@ -181,9 +206,15 @@ Inductive byntree : Type :=
     Give an [Inductive] definition of [ExSet]: *)
 
 Inductive ExSet : Type :=
-  (* FILL IN HERE *)
+| con1 (b:bool)
+| con2 (n:nat)(e:ExSet)
 .
+Check ExSet_ind.
 (** [] *)
+
+
+
+
 
 (* ################################################################# *)
 (** * Polymorphism *)
@@ -226,6 +257,14 @@ Inductive tree (X:Type) : Type :=
 Check tree_ind.
 (** [] *)
 
+
+Inductive mytype (X:Type) : Type :=
+| constr1 (x:X)
+| constr2 (n:nat)
+| constr3 (m:mytype X)(n:nat).
+Check mytype_ind.
+
+
 (** **** Exercise: 1 star, standard, optional (mytype)  
 
     Find an inductive definition that gives rise to the
@@ -240,6 +279,14 @@ Check tree_ind.
             forall m : mytype X, P m
 *) 
 (** [] *)
+
+
+Inductive foo (X Y:Type):Type :=
+| bar (x:X)
+| baz (y:Y)
+| quux (f1:nat->foo X Y).
+Check foo_ind.
+
 
 (** **** Exercise: 1 star, standard, optional (foo)  
 
@@ -270,11 +317,12 @@ Inductive foo' (X:Type) : Type :=
      foo'_ind :
         forall (X : Type) (P : foo' X -> Prop),
               (forall (l : list X) (f : foo' X),
-                    _______________________ ->
-                    _______________________   ) ->
-             ___________________________________________ ->
-             forall f : foo' X, ________________________
+                    ____P f____ ->
+                    _____P (C1 l f)___   ) ->
+             ________________P C2___________ ->
+             forall f : foo' X, __P f___________
 *)
+Check foo'_ind.
 
 (** [] *)
 
@@ -312,8 +360,8 @@ Definition P_m0r' : nat->Prop :=
 
 (** Now it is easier to see where [P_m0r] appears in the proof. *)
 
-Theorem mult_0_r'' : forall n:nat,
-  P_m0r n.
+
+Theorem mult_0_r'' : forall n:nat, P_m0r n.
 Proof.
   apply nat_ind.
   - (* n = O *) reflexivity.
@@ -519,6 +567,9 @@ Check even_ind.
     slightly awkward alternate definition of evenness that we saw in
     an exercise in the \chap{IndProp} chapter) is equivalent to the
     cleaner inductive definition [even]: *)
+
+Print even'.
+
 Theorem ev_ev' : forall n, even n -> even' n.
 Proof.
   apply even_ind.
