@@ -1,3 +1,30 @@
+Variable U:Type.
+Variable Q R:U->Prop.
+
+Theorem aaa:
+  (exists y:U, Q y /\ forall z:U, Q z -> y = z)
+  -> ((exists y:U, Q y /\ R y) <-> (forall y:U, Q y -> R y)).
+Proof.
+  intros. split.
+  - intros. 
+    destruct H. destruct H. apply H2 in H1.
+    destruct H0. destruct H0. apply H2 in H0.
+    rewrite <- H1. rewrite H0. apply H3.
+  - intros.
+    destruct H.
+    exists x. split.
+    + destruct H. apply H.
+    + apply H0. destruct H. apply H.
+Qed.
+    
+
+
+
+
+
+
+
+
 Lemma lem1: forall n, 0 <= n.
   induction n. apply le_n. apply le_S. apply IHn.
 Qed.
