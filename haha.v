@@ -6,15 +6,15 @@ Theorem aaa:
   -> ((exists y:U, Q y /\ R y) <-> (forall y:U, Q y -> R y)).
 Proof.
   intros. split.
-  - intros. 
-    destruct H. destruct H. apply H2 in H1.
-    destruct H0. destruct H0. apply H2 in H0.
-    rewrite <- H1. rewrite H0. apply H3.
-  - intros.
-    destruct H.
-    exists x. split.
-    + destruct H. apply H.
-    + apply H0. destruct H. apply H.
+  - destruct H. destruct H.
+    intros. apply H0 in H2.
+    destruct H1. destruct H1.
+    apply H0 in H1.
+    rewrite <- H2. rewrite H1. apply H3.
+  - destruct H.
+    intros.
+    exists x. destruct H. split.
+    apply H. apply H0. apply H.
 Qed.
     
 
