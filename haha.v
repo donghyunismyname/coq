@@ -1,3 +1,21 @@
+Theorem afu: forall X:Set, forall phi:X->Prop,
+  (exists a:X, phi a) ->
+  (forall x y:X, phi x -> phi y -> x = y) ->
+  (exists a:X, phi a /\ forall x:X, phi x -> x=a).
+Proof.
+  intros.
+  destruct H.
+  exists x.
+  split.
+  apply H.
+  intros.
+  apply H0.
+  apply H1.
+  apply H.
+Qed.
+  
+
+
 Variable U:Type.
 Variable Q R:U->Prop.
 
