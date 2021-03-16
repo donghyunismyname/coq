@@ -41,8 +41,8 @@ Notation "a <=? b" := (leb a b) (at level 10).
 Lemma le_0_Sn: forall n:nat, 0 <= S n.
 Proof.
 induction n.
-  apply le_S. apply le_n.
-  apply le_S. apply IHn.
+  - apply le_S. apply le_n.
+  - apply le_S. apply IHn.
 Qed.
 
 Lemma le_Sa_Sb: forall a b:nat, a<=b <-> S a <= S b.
@@ -91,7 +91,7 @@ Definition prime (n:nat) := ~ composite n.
 
 
 
-Theorem arbitrary_large_prime: forall n:nat, exists p:nat, n <= p /\
+Theorem arbitrarily_large_prime: forall n:nat, exists p:nat, n <= p /\
   ~ exists a b:nat, 1<a /\ 1<b /\ p=a*b.
 Proof.
 Admitted.
