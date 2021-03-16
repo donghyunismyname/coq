@@ -41,8 +41,8 @@ Notation "a <=? b" := (leb a b) (at level 10).
 Lemma le_0_Sn: forall n:nat, 0 <= S n.
 Proof.
 induction n.
-  apply le_S. apply le_n.
-  apply le_S. apply IHn.
+  - apply le_S. apply le_n.
+  - apply le_S. apply IHn.
 Qed.
 
 Lemma le_Sa_Sb: forall a b:nat, a<=b <-> S a <= S b.
@@ -82,16 +82,54 @@ Proof.
 Qed.
 
 
+
+Inductive natlist :=
+| nil : natlist
+| cons : nat -> natlist -> natlist.
+
+Notation "[]" := nil.
+Notation "[ x ]" := (cons x nil).
+Notation "[ x ; y ; .. ; z ]" := (cons x (cons y .. (cons z nil) ..)).
+Notation "x :: xs" := (cons x xs).
+
+Fixpoint length (xs:natlist): nat :=
+match xs with
+| [] => 0
+| _::ys => S (length ys)
+end.
+
+Fixpoint contain (xs:natlist)(x:nat) : bool :=
+match xs with
+| [] => false
+| y::ys => if x=?y then true else contain ys x
+end.
+
+Print option.
+
+Fixpoint access (xs:natlist)(i:nat) : option nat :=
+match xs, i with
+| [], _ => None
+| y::ys, 0 => Some y
+| y::ys, S j => access ys j
+end.
+
+
+
 Definition composite (n:nat) := exists a b:nat, 1<a /\ 1<b /\ n=a*b.
 Definition prime (n:nat) := ~ composite n.
 
 
 
+Fixpoint factorize (n:nat) : natlist.
+Admitted.
+
+Theorem factorize_is_distinct :
+forall n:nat, 
 
 
 
 
-Theorem arbitrary_large_prime: forall n:nat, exists p:nat, n <= p /\
+Theorem arbitrarily_large_prime: forall n:nat, exists p:nat, n <= p /\
   ~ exists a b:nat, 1<a /\ 1<b /\ p=a*b.
 Proof.
 Admitted.
