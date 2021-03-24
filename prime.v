@@ -26,7 +26,20 @@ Proof.
 Qed.
 
 
-
+Lemma neqb_neq: forall a b:nat, a=?b = false <-> a<>b .
+split.
+intros. intro. rewrite H0 in H.
+enough (forall n:nat, n=?n = true).
+rewrite H1 in H. discriminate.
+induction n. reflexivity. simpl. apply IHn.
+generalize a as x. generalize b as y.
+induction y, x.
+- intros. assert (0=0). reflexivity. contradiction.
+- intros. simpl. reflexivity.
+- intros. simpl. reflexivity.
+- intro. simpl. apply IHy. intro. assert (S x = S y).
+rewrite H0. reflexivity. apply H. apply H1.
+Qed.
 
 
 Fixpoint leb (a b:nat):bool :=
@@ -82,6 +95,45 @@ Proof.
 Qed.
 
 
+Lemma neq_lt : forall a b:nat, a<>b <-> a<b \/ b<a.
+induction a, b.
+- split. 
+  + intro. contradiction.
+  + intro. destruct H. inversion H. inversion H.
+- split.
+  + intro. left. apply leb_le. simpl. reflexivity.
+  + intro. intro. apply eqb_eq in H0. simpl in H0. discriminate.
+- split.
+  + intro. right. apply -> le_Sa_Sb. apply leb_le. reflexivity.
+  + intro. intro. apply eqb_eq in H0. simpl in H0. discriminate.
+- split.
+  + intro. assert (a <> b).
+    enough (forall A B:Prop, (A<->B) -> ~A -> ~B).
+    apply (H0 (S a = S b) (a=b)).
+    split. intro. inversion H1. reflexivity.
+    intro. rewrite H1. reflexivity.
+    apply H.
+    intros. intro. apply H1. apply H0. apply H2.
+    apply IHa in H0. destruct H0.
+    left. apply le_Sa_Sb in H0. apply H0.
+    right. apply le_Sa_Sb in H0. apply H0.
+  + intros. destruct H.
+    * unfold "<" in H. apply le_Sa_Sb in H. unfold "<" in IHa.
+      assert (S a <= b \/ S b <= a). left. apply H.
+      apply IHa in H0.
+      enough (forall A B:Prop, A<->B -> ~A -> ~B).
+      apply (H1 (a=b)). split. intro. rewrite H2. reflexivity.
+      intro. inversion H2. reflexivity. apply H0.
+      intros. intro. apply H2. apply H1. apply H3.
+    * unfold "<" in H.
+      unfold "<" in IHa.
+      assert (a<>b -> S a <> S b).
+      intro. intro. apply H0. inversion H1. reflexivity.
+      apply H0. apply IHa. right.
+      apply le_Sa_Sb. apply H.
+Qed.
+
+
 
 Inductive natlist :=
 | nil : natlist
@@ -112,6 +164,36 @@ match xs, i with
 | y::ys, 0 => Some y
 | y::ys, S j => access ys j
 end.
+
+
+Fixpoint sort_insert (x:nat)(xs:natlist):natlist :=
+match xs with
+| [] => [x]
+| y::ys => if x<=?y then x::y::ys else y::(sort_insert x ys)
+end.
+Fixpoint sort (xs:natlist):natlist :=
+match xs with
+| [] => []
+| y::ys => sort_insert y (sort ys)
+end.
+
+
+
+
+
+
+Goal forall a b:nat, a<>b -> exists x:nat, 1 <=x /\ (x=a \/ x=b).
+intros. apply neq_lt in H. destruct H.
+- exists b. split. unfold "<" in H.
+  induction a. apply H. apply IHa.
+  enough (forall x y z:nat, x<=y -> y<=z -> x<=z).
+  apply (H0 (S a) (S (S a))).
+  apply le_S. apply le_n. apply H.
+  in
+  
+
+
+
 
 
 
