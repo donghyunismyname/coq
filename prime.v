@@ -180,16 +180,6 @@ end.
 
 
 
-
-
-Goal forall a b:nat, a<>b -> exists x:nat, 1 <=x /\ (x=a \/ x=b).
-intros. apply neq_lt in H. destruct H.
-- exists b. split. unfold "<" in H.
-  induction a. apply H. apply IHa.
-  enough (forall x y z:nat, x<=y -> y<=z -> x<=z).
-  apply (H0 (S a) (S (S a))).
-  apply le_S. apply le_n. apply H.
-  in
   
 
 
@@ -200,18 +190,29 @@ intros. apply neq_lt in H. destruct H.
 Definition composite (n:nat) := exists a b:nat, 1<a /\ 1<b /\ n=a*b.
 Definition prime (n:nat) := ~ composite n.
 
-
-
-Fixpoint factorize (n:nat) : natlist.
-Admitted.
-
-Theorem factorize_is_distinct :
-forall n:nat, 
+Definition primeb n : bool := 
+  match n with
+  | 0 => 
 
 
 
 
-Theorem arbitrarily_large_prime: forall n:nat, exists p:nat, n <= p /\
+
+Goal forall a b:nat, a<>b -> exists x:nat, 1 <=x /\ (x=a \/ x=b).
+intros. apply neq_lt in H. destruct H.
+- exists b. split. unfold "<" in H.
+  induction a. apply H. apply IHa.
+  enough (forall x y z:nat, x<=y -> y<=z -> x<=z).
+  apply (H0 (S a) (S (S a))).
+  apply le_S. apply le_n. apply H.
+  in
+
+
+
+
+
+
+Theorem arbitrarily_large_prime_exists: forall n:nat, exists p:nat, n <= p /\
   ~ exists a b:nat, 1<a /\ 1<b /\ p=a*b.
 Proof.
 Admitted.
